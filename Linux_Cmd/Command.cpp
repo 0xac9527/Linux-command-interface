@@ -1621,7 +1621,108 @@ void find_mindepth_1(string path, string parameter)
 	depth = 0;
 	find_mindepth(path, parameter);
 }
+bool complex_find_name(struct _finddata_t file, string name)
+{
+	if (name == "")
+		return true;
+	else
+	{
+		string temp;
+		temp.append(file.name);
+		int i;
+		int j = 0;
+		char temp_1[10] = {};
+		for (i = temp.length() - 1; i > 0; i--)
+		{
+			if (temp[i] != '.')
+			{
+				temp_1[j] = temp[i];
+				j++;
+			}
+			else
+				break;
+		}
+		strrev(temp_1);
+		temp = temp_1;
+		if (strcmp(temp.c_str(), name.c_str()) == 0)
+			return true;
+		else
+			return false;
+	}
 
+}
+bool complex_find_size(struct _finddata_t file, string size)
+{
+	if (size == "")
+		return true;
+	else
+	{
+		string temp = size;
+		char unit = temp.at(temp.length() - 1);
+		char sign = temp.at(0);
+		int number = 0;
+		int currency;
+
+		if (unit == 'b')
+		{
+			currency = 512;
+			temp.erase(temp.end() - 1);
+
+		}
+		else if (unit == 'c')
+		{
+			currency = 1;
+			temp.erase(temp.end() - 1);
+
+		}
+		else if (unit == 'w')
+		{
+			currency = 2;
+			temp.erase(temp.end() - 1);
+		}
+		else if (unit == 'k')
+		{
+			currency = 1024;
+			temp.erase(temp.end() - 1);
+
+		}
+		else if (unit == 'm')
+		{
+			currency = 1048576;
+			temp.erase(temp.end() - 1);
+		}
+		else if (unit == 'g')
+		{
+			currency = 1073741824;
+			temp.erase(temp.end() - 1);
+		}
+		else
+		{
+			currency = 512;
+		}
+		if (sign == '-')
+		{
+			temp.erase(0, 1);
+			number = atoi(temp.c_str())*currency;
+			if (file.size < number)
+				return true;		
+		}
+
+		else if (sign == '+')
+		{
+			temp.erase(0, 1);
+			number = atoi(temp.c_str())*currency;
+			if (file.size > number)
+				return true;
+		}
+		else
+		{
+			number = atoi(temp.c_str())*currency;
+			if (file.size == number)
+				return true;
+		}
+			   return false;	
+}
 
 
 

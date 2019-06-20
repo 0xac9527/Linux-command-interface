@@ -258,6 +258,25 @@ int main()
 
 			else if (i > 4)
 			{
+				string name = NULL;
+				string size = NULL;
+				for (int j = 0; j <=i; j++)
+				{
+					if (strcmp(str[j].c_str(), "-name") == 0)
+						 name = str[j + 1];
+					    name.erase(0, 3);
+					      name.erase(name.end() - 1);
+				
+					if (strcmp(str[j].c_str(), "-size") == 0)
+						 size = str[j + 1];
+				 }
+
+			      
+				 
+			 
+				
+				
+		        
               
 
 
