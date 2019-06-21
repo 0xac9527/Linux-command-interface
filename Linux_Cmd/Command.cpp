@@ -1718,10 +1718,9 @@ bool complex_find_size(struct _finddata_t file, string size)
 		else
 		{
 			number = atoi(temp.c_str())*currency;
-			if (file.size == number)
+			if (file.size == number)   
 				return true;
 		}
-			   return false;	
 }
 
 
