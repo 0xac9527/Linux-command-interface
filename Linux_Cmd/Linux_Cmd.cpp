@@ -40,7 +40,7 @@ int main()
 	{
 		int ret1;
 		int ret2;
-	};
+	}; 
 
 	char CurrentWorkDirectory[128];
 	GetCurrentDirectoryA(128, CurrentWorkDirectory);
@@ -309,6 +309,9 @@ int main()
 		}
 	}
 	 return 0;
+}
+bool asdasd() {
+	return true;
 }
 
 
