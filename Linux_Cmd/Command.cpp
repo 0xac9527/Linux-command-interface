@@ -958,44 +958,9 @@ void short_find(string path, string option, string parameter)
 					}
 				}
 				else if (!(fileinfo.attrib & _A_HIDDEN)) {
-
-					time_t current_time;
-					string temp = parameter;
-					current_time = time(0);
-					int delta_time = current_time - fileinfo.time_access;
-					char temp_char = temp.at(0);
-					if (temp_char == '-')
-					{
-						temp.erase(0, 1);
-						
-                     	if (delta_time < 60 * atoi(temp.c_str()))
-						{
-							cout << right << setw(num * 2) << "|";
-							cout << fileinfo.name << endl;
-						}
-
-					}
-					else if (temp_char== '+')
-					{
-						temp.erase(0, 1);
-						
-						if (delta_time > 60 * atoi(temp.c_str()))
-						{
-							cout << right << setw(num * 2) << "|";
-							cout << fileinfo.name << endl;
-                        }
-
-					}
-					else
-					{
-     					if (delta_time==60 * atoi(temp.c_str()))
-						{
-							cout << right << setw(num * 2) << "|";
-							cout << fileinfo.name << endl;
-
-						}
-					}
-
+					
+					find_time_print(fileinfo, "-amin", parameter);
+				
 				}
 
 			} while (_findnext(hFile, &fileinfo) == 0);  //寻找下一个，成功返回0，否则-1
@@ -1026,42 +991,7 @@ void short_find(string path, string option, string parameter)
 				}
 				else if (!(fileinfo.attrib & _A_HIDDEN)) {
 
-					time_t current_time;
-					string temp = parameter;
-					current_time = time(0);
-					int delta_time = current_time - fileinfo.time_write;
-					char temp_char = temp.at(0);
-					if (temp_char == '-')
-					{
-						temp.erase(0, 1);
-
-						if (delta_time < 60 * atoi(temp.c_str()))
-						{
-							cout << right << setw(num * 2) << "|";
-							cout << fileinfo.name << endl;
-						}
-
-					}
-					else if (temp_char == '+')
-					{
-						temp.erase(0, 1);
-
-						if (delta_time > 60 * atoi(temp.c_str()))
-						{
-							cout << right << setw(num * 2) << "|";
-							cout << fileinfo.name << endl;
-						}
-
-					}
-					else
-					{
-						if (delta_time == 60 * atoi(temp.c_str()))
-						{
-							cout << right << setw(num * 2) << "|";
-							cout << fileinfo.name << endl;
-
-						}
-					}
+					find_time_print(fileinfo, "-mmin", parameter);
 				}
 
 			} while (_findnext(hFile, &fileinfo) == 0);  //寻找下一个，成功返回0，否则-1
@@ -1093,42 +1023,7 @@ void short_find(string path, string option, string parameter)
 				}
 				else if (!(fileinfo.attrib & _A_HIDDEN)) {
 
-					time_t current_time;
-					string temp = parameter;
-					current_time = time(0);
-					int delta_time = current_time - fileinfo.time_access;
-					char temp_char = temp.at(0);
-					if (temp_char == '-')
-					{
-						temp.erase(0, 1);
-
-						if (delta_time < 60*60*24 * atoi(temp.c_str()))
-						{
-							cout << right << setw(num * 2) << "|";
-							cout << fileinfo.name << endl;
-						}
-
-					}
-					else if (temp_char == '+')
-					{
-						temp.erase(0, 1);
-
-						if (delta_time > 60 * 60 * 24 * atoi(temp.c_str()))
-						{
-							cout << right << setw(num * 2) << "|";
-							cout << fileinfo.name << endl;
-						}
-
-					}
-					else
-					{
-						if (delta_time == 60 * 60 * 24 * atoi(temp.c_str()))
-						{
-							cout << right << setw(num * 2) << "|";
-							cout << fileinfo.name << endl;
-
-						}
-					}
+					find_time_print(fileinfo, "-atime", parameter);
 				}
 
 			} while (_findnext(hFile, &fileinfo) == 0);  //寻找下一个，成功返回0，否则-1
@@ -1159,42 +1054,7 @@ void short_find(string path, string option, string parameter)
 				}
 				else if (!(fileinfo.attrib & _A_HIDDEN)) {
 
-					time_t current_time;
-					string temp = parameter;
-					current_time = time(0);
-					int delta_time = current_time - fileinfo.time_write;
-					char temp_char = temp.at(0);
-					if (temp_char == '-')
-					{
-						temp.erase(0, 1);
-
-						if (delta_time < 60*60*24*atoi(temp.c_str()))
-						{
-							cout << right << setw(num * 2) << "|";
-							cout << fileinfo.name << endl;
-						}
-
-					}
-					else if (temp_char == '+')
-					{
-						temp.erase(0, 1);
-
-						if (delta_time > 60 * 60 * 24 * atoi(temp.c_str()))
-						{
-							cout << right << setw(num * 2) << "|";
-							cout << fileinfo.name << endl;
-						}
-
-					}
-					else
-					{
-						if (delta_time == 60 * 60 * 24 * atoi(temp.c_str()))
-						{
-							cout << right << setw(num * 2) << "|";
-							cout << fileinfo.name << endl;
-
-						}
-					}
+					find_time_print(fileinfo, "-mtime", parameter);
 				}
 
 			} while (_findnext(hFile, &fileinfo) == 0);  //寻找下一个，成功返回0，否则-1
@@ -1403,7 +1263,6 @@ void short_find(string path, string option, string parameter)
 	}
 	
 }
-
 void direct_find(string path, string parameter)                          //可定义Recursive_find(string path,string parameter) 复用。
 {   
 	long hFile = 0;
@@ -1553,11 +1412,8 @@ void  find_maxdepth(string path, string parameter){
 					cout << fileinfo.name << endl;
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN |
 						FOREGROUND_BLUE);
-					/*if (depth < atoi(parameter.c_str())+1)
-					{*/
 						find_maxdepth(p.assign(path).append("\\").append("\\").append(fileinfo.name),parameter);
 						depth--;
-					/*}*/
 				}
 			}
 			else if (!(fileinfo.attrib & _A_HIDDEN)) {
@@ -1810,118 +1666,23 @@ bool complex_find_atime(struct _finddata_t file, string atime)
 	if (atime == "")
 		return true;
 	else
-	{
-		time_t current_time;
-		string temp = atime;
-		current_time = time(0);
-		int delta_time = current_time - file.time_access;
-		char temp_char = temp.at(0);
-		if (temp_char == '-')
-		{
-			temp.erase(0, 1);
-
-			if (delta_time < 60 * 60 * 24 * atoi(temp.c_str()))
-			{
-				return true;
-			}
-
-		}
-		else if (temp_char == '+')
-		{
-			temp.erase(0, 1);
-
-			if (delta_time > 60 * 60 * 24 * atoi(temp.c_str()))
-			{
-				return true;
-			}
-
-		}
-		else
-		{
-			if (delta_time == 60 * 60 * 24 * atoi(temp.c_str()))
-				return true;
-		}
-	}
-	      return false;
-
+		find_time(file, "-atime", atime);
 }
+
+
 bool complex_find_mtime(struct _finddata_t file, string mtime)
 {
 	if (mtime == "")
 		return true;
 	else
-	{
-		time_t current_time;
-		string temp = mtime;
-		current_time = time(0);
-		int delta_time = current_time - file.time_write;
-		char temp_char = temp.at(0);
-		if (temp_char == '-')
-		{
-			temp.erase(0, 1);
-
-			if (delta_time < 60 * 60 * 24 * atoi(temp.c_str()))
-			{
-				return true;
-			}
-
-		}
-		else if (temp_char == '+')
-		{
-			temp.erase(0, 1);
-
-			if (delta_time > 60 * 60 * 24 * atoi(temp.c_str()))
-			{
-				return true;
-			}
-
-		}
-		else
-		{
-			if (delta_time == 60 * 60 * 24 * atoi(temp.c_str()))
-				return true;
-		}
-	}
-	return false;
+		find_time(file, "-mtime", mtime);
 }
 bool complex_find_amin(struct _finddata_t file, string amin)
 {
 	if (amin == "")
 		return true;
 	else
-	{
-		time_t current_time;
-		string temp = amin;
-		current_time = time(0);
-		int delta_time = current_time - file.time_access;
-		char temp_char = temp.at(0);
-		if (temp_char == '-')
-		{
-			temp.erase(0, 1);
-
-			if (delta_time < 60 * atoi(temp.c_str()))
-			{
-				return true;
-			}
-
-		}
-		else if (temp_char == '+')
-		{
-			temp.erase(0, 1);
-
-			if (delta_time > 60 * atoi(temp.c_str()))
-			{
-				return true;
-			}
-
-		}
-		else
-		{
-			if (delta_time == 60 *atoi(temp.c_str()))
-				return true;
-		}
-	}
-	return false;
+		find_time(file, "-amin", amin);
 
 }
 
@@ -1930,41 +1691,9 @@ bool complex_find_mmin(struct _finddata_t file, string mmin)
 	if (mmin == "")
 		return true;
 	else
-	{
-		time_t current_time;
-		string temp = mmin;
-		current_time = time(0);
-		int delta_time = current_time - file.time_write;
-		char temp_char = temp.at(0);
-		if (temp_char == '-')
-		{
-			temp.erase(0, 1);
-
-			if (delta_time < 60 * atoi(temp.c_str()))
-			{
-				return true;
-			}
-
-		}
-		else if (temp_char == '+')
-		{
-			temp.erase(0, 1);
-
-			if (delta_time > 60 * atoi(temp.c_str()))
-			{
-				return true;
-			}
-
-		}
-		else
-		{
-			if (delta_time == 60 * atoi(temp.c_str()))
-				return true;
-		}
-	}
-	return false;
-
+		find_time(file, "-mmin", mmin);
 }
+
 
 void complex_find(string path, string name, string size, string iname, string maxdepth, string mindepth, string atime, string amin,string mtime, string mmin, string newer, string empty)
 {
@@ -2012,6 +1741,104 @@ void complex_find_depth(string path, string name, string size, string iname, str
 	complex_find(path, name, size, iname, maxdepth, mindepth, atime, amin, mtime, mmin, newer, empty);
 
 }
+bool find_time(struct _finddata_t file, string time_option,string time_str)
+{
+	time_t current_time;
+	string temp = time_str;
+	current_time = time(0);
+	int exchange = 1;
+	int delta_time;
+	if (strcmp(time_option.c_str(), "-atime") == 0 || strcmp(time_option.c_str(), "-mtime") == 0)
+	     exchange = 60 * 24;
+	if(strcmp(time_option.c_str(), "-atime")==0|| strcmp(time_option.c_str(), "-amin")==0)
+		delta_time = current_time - file.time_access;
+	if (strcmp(time_option.c_str(), "-mtime") == 0 || strcmp(time_option.c_str(), "-mmin") == 0)
+	            delta_time = current_time - file.time_write;
+	char temp_char = temp.at(0);
+
+	if (temp_char == '-')
+	{
+		temp.erase(0, 1);
+
+		if (delta_time < 60 * exchange*atoi(temp.c_str()))
+		{
+			return true;
+		}
+
+	}
+	else if (temp_char == '+')
+	{
+		temp.erase(0, 1);
+
+		if (delta_time > 60 *exchange* atoi(temp.c_str()))
+		{
+			return true;
+		}
+
+	}
+	else
+	{
+		if (delta_time == 60 * exchange*atoi(temp.c_str()))
+			return true;
+	}
+	return false; 
+}
+void find_time_print(struct _finddata_t file, string time_option, string time_str)
+{
+	time_t current_time;
+	string temp = time_str;
+	current_time = time(0);
+	int exchange = 1;
+	int delta_time;
+	if (strcmp(time_option.c_str(), "-atime") == 0 || strcmp(time_option.c_str(), "-mtime") == 0)
+		exchange = 60 * 24;
+	if (strcmp(time_option.c_str(), "-atime") == 0 || strcmp(time_option.c_str(), "-amin") == 0)
+		delta_time = current_time - file.time_access;
+	if (strcmp(time_option.c_str(), "-mtime") == 0 || strcmp(time_option.c_str(), "-mmin") == 0)
+		delta_time = current_time - file.time_write;
+	char temp_char = temp.at(0);
+
+	if (temp_char == '-')
+	{
+		temp.erase(0, 1);
+
+		if (delta_time < 60 * exchange * atoi(temp.c_str()))
+		{
+			cout << right << setw(num * 2) << "|";
+			cout << file.name << endl;
+		}
+
+	}
+	else if (temp_char == '+')
+	{
+		temp.erase(0, 1);
+
+		if (delta_time > 60 * exchange * atoi(temp.c_str()))
+		{
+			cout << right << setw(num * 2) << "|";
+			cout << file.name << endl;
+		}
+
+	}
+	else
+	{
+		if (delta_time == 60 * exchange * atoi(temp.c_str()))
+		{
+			cout << right << setw(num * 2) << "|";
+			cout << file.name << endl;
+		}
+	}
+
+}
+	
+
+
+
+
+
+
+
+
 
 
 

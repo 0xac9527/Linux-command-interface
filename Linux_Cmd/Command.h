@@ -63,3 +63,5 @@ extern bool complex_find_atime(struct _finddata_t file, string atime);
 extern bool complex_find_mtime(struct _finddata_t file, string mtime);
 extern bool complex_find_amin(struct _finddata_t file, string amin);
 extern bool complex_find_mmin(struct _finddata_t file, string mmin);
+extern bool find_time(struct _finddata_t file, string time_option, string time_str);
+extern void find_time_print(struct _finddata_t file, string time_option, string time_str);
