@@ -103,9 +103,9 @@ void ls_l(string path)
 						cout << left << setw(16) << fileinfo.size;
 						cout << left << setw(8) << fileinfo.attrib;
 						time_t* m_sencodes = &fileinfo.time_access;
-						tm* m_localTime = localtime(m_sencodes);
-						str_show.append(to_string(m_localTime->tm_year + 1900)).append("/").append(to_string(m_localTime->tm_mon + 1)).append("/").append(to_string(m_localTime->tm_mday)).append(" ")
-							.append(to_string(m_localTime->tm_hour)).append(":").append(to_string(m_localTime->tm_min)).append(":").append(to_string(m_localTime->tm_sec));
+						tm* m_localtime = localtime(m_sencodes);
+						str_show.append(to_string(m_localtime->tm_year + 1900)).append("/").append(to_string(m_localtime->tm_mon + 1)).append("/").append(to_string(m_localtime->tm_mday)).append(" ")
+							.append(to_string(m_localtime->tm_hour)).append(":").append(to_string(m_localtime->tm_min)).append(":").append(to_string(m_localtime->tm_sec));
 						cout << left << setw(32) << str_show;
 						str_show.clear();
 						length = 0;
@@ -124,9 +124,9 @@ void ls_l(string path)
 				cout << left << setw(8) << fileinfo.attrib;
 
 				time_t* m_sencodes = &fileinfo.time_access;
-				tm* m_localTime = localtime(m_sencodes);
-				str_show.append(to_string(m_localTime->tm_year + 1900)).append("/").append(to_string(m_localTime->tm_mon + 1)).append("/").append(to_string(m_localTime->tm_mday)).append(" ")
-					.append(to_string(m_localTime->tm_hour)).append(":").append(to_string(m_localTime->tm_min)).append(":").append(to_string(m_localTime->tm_sec));
+				tm* m_localtime = localtime(m_sencodes);
+				str_show.append(to_string(m_localtime->tm_year + 1900)).append("/").append(to_string(m_localtime->tm_mon + 1)).append("/").append(to_string(m_localtime->tm_mday)).append(" ")
+					.append(to_string(m_localtime->tm_hour)).append(":").append(to_string(m_localtime->tm_min)).append(":").append(to_string(m_localtime->tm_sec));
 				cout << setw(32) << str_show << setw(8);
 				str_show.clear();
 				cout << filetype(fileinfo) << endl;
@@ -137,6 +137,7 @@ void ls_l(string path)
 		} while (_findnext(hFile, &fileinfo) == 0);
 		_findclose(hFile);
 	}
+	
 }
 
 void ls_a(string path) {
@@ -781,7 +782,7 @@ void cat(string path,BOOL pFlag)
 	BOOL Flag = FALSE;
 	static COORD curser_position;
 	CONSOLE_SCREEN_BUFFER_INFO bInfo;
-	HANDLE hOut;
+	HANDLE hOut = NULL;
 	int line = 1;
 	do {
 		if (Flag)
@@ -915,7 +916,7 @@ void short_find(string path, string option, string parameter)
 						else
 							break;
 					}
-					strrev(temp_1);
+					_strrev(temp_1);
 					temp = temp_1;
 
 					if (strcmp(temp.c_str(), parameter.c_str()) == 0)
@@ -1387,7 +1388,7 @@ void short_find(string path, string option, string parameter)
 						else
 							break;
 					}
-					strrev(temp_1);
+					_strrev(temp_1);
 					temp = temp_1;
 					if (strcmp(temp.c_str(), parameter.c_str()) == 0)
 					{
@@ -1642,7 +1643,7 @@ bool complex_find_name(struct _finddata_t file, string name)
 			else
 				break;
 		}
-		strrev(temp_1);
+		_strrev(temp_1);
 		temp = temp_1;
 		if (strcmp(temp.c_str(), name.c_str()) == 0)
 			return true;
@@ -1705,7 +1706,7 @@ bool complex_find_size(struct _finddata_t file, string size)
 			temp.erase(0, 1);
 			number = atoi(temp.c_str())*currency;
 			if (file.size < number)
-				return true;		
+				return true;
 		}
 
 		else if (sign == '+')
@@ -1718,10 +1719,60 @@ bool complex_find_size(struct _finddata_t file, string size)
 		else
 		{
 			number = atoi(temp.c_str())*currency;
-			if (file.size == number)   
+			if (file.size == number)
 				return true;
 		}
+		return false;
+	}
 }
+
+void complex_find(string path, string name, string size)
+{
+	long hFile = 0;
+	struct _finddata_t fileinfo;  //很少用的文件信息读取结构
+	string p;
+	if ((hFile = _findfirst(p.assign(path).append("\\").append("*").c_str(), &fileinfo)) != -1)
+	{
+		num++;
+		do {
+			if ((fileinfo.attrib & _A_SUBDIR) && !(fileinfo.attrib &_A_HIDDEN)) {  //比较文件类型是否是文件夹
+				if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0) {
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_GREEN |
+						FOREGROUND_BLUE);
+					if (num > 0)
+						cout << right << setw(num * 2) << "|";
+					cout << fileinfo.name << endl;
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN |
+						FOREGROUND_BLUE);
+					complex_find(p.assign(path).append("\\").append("\\").append(fileinfo.name), name,size);
+					num--;
+				}
+			}
+			else if (!(fileinfo.attrib & _A_HIDDEN)) {
+			     
+				if(complex_find_size(fileinfo,size)&&complex_find_name(fileinfo,name))
+			
+				{
+					  if (num > 0)
+						cout << right << setw(num * 2) << "|";
+					  cout << fileinfo.name << endl;
+				}
+			}
+		} while (_findnext(hFile, &fileinfo) == 0);  //寻找下一个，成功返回0，否则-1
+		_findclose(hFile);
+	}
+
+}
+
+
+
+
+
+	
+
+
+
+
 
 
 

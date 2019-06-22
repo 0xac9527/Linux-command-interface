@@ -6,7 +6,7 @@
 #include <io.h>
 #include <time.h>
 #include<iomanip>
-#include <afx.h>
+#include <windows.h>
 
 
 
@@ -50,3 +50,4 @@ extern void  find_maxdepth(string path,string parameter);
 extern void  find_mindepth(string path,string parameter);
 extern void find_maxdepth_1(string path, string parameter);
 extern void  find_mindepth_1(string path, string parameter);
+extern void complex_find(string path, string name, string size);

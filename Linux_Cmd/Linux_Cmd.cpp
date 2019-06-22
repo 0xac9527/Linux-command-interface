@@ -237,8 +237,8 @@ int main()
 				{
                     temp.erase(0, 3);
 					temp.erase(temp.end() - 1);
-					char *p;
-					char *q = (char*)(temp.c_str());
+					char *p = nullptr;
+					char * q = (char*)(temp.c_str());
 
 					p = strlwr(q);
 					string temp = p;
@@ -264,20 +264,18 @@ int main()
 				{
 					if (strcmp(str[j].c_str(), "-name") == 0)
 						 name = str[j + 1];
-					    name.erase(0, 3);
+					      name.erase(0, 3);
 					      name.erase(name.end() - 1);
 				
 					if (strcmp(str[j].c_str(), "-size") == 0)
 						 size = str[j + 1];
 				 }
+				if (str[1].find(":", 0) != string::npos)//若为全局路径
+					find_path = str[1];
+				else
 
-			      
-				 
-			 
-				
-				
-		        
-              
+					find_path = cwd + str[1];
+				complex_find(find_path,name,size);
 
 
 
@@ -310,9 +308,7 @@ int main()
 	}
 	 return 0;
 }
-bool asdasd() {
-	return true;
-}
+
 
 
 
