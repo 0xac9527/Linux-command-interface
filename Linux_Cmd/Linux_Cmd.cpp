@@ -34,7 +34,7 @@ int main()
 	cout << "**           Author：shao  xh              **" << endl;
 	cout << "*********************************************" << endl;
 	string StrCmd;
-	string str[8];
+	string str[100];
 	int i = 0;
 	struct retval
 	{
@@ -258,24 +258,51 @@ int main()
 
 			else if (i > 4)
 			{
-				string name = NULL;
-				string size = NULL;
+				string name = "";
+				string size = "";
+				string iname = "";
+				string maxdepth = "";
+				string mindepth = "";
+				string atime = "";
+				string mtime = "";
+				string amin = "";
+				string mmin = "";
+				string newer = "";
+				string empty = "";
+				
 				for (int j = 0; j <=i; j++)
 				{
 					if (strcmp(str[j].c_str(), "-name") == 0)
-						 name = str[j + 1];
-					      name.erase(0, 3);
-					      name.erase(name.end() - 1);
-				
+						 name = str[j + 1];   
 					if (strcmp(str[j].c_str(), "-size") == 0)
-						 size = str[j + 1];
+						size = str[j + 1];
+					if (strcmp(str[j].c_str(), "-iname") == 0)
+						iname = str[j + 1];
+					if (strcmp(str[j].c_str(), "-maxdepth") == 0)
+						maxdepth = str[j + 1];
+					if (strcmp(str[j].c_str(), "-mindepth") == 0)
+						mindepth = str[j + 1];
+					if (strcmp(str[j].c_str(), "-atime") == 0)
+						atime = str[j + 1];
+					if (strcmp(str[j].c_str(), "-amin") == 0)
+						amin = str[j + 1];
+					if (strcmp(str[j].c_str(), "-mtime") == 0)
+						mtime = str[j + 1];
+					if (strcmp(str[j].c_str(), "-mmin") == 0)
+						mmin = str[j + 1];
+					if (strcmp(str[j].c_str(), "-empty") == 0)
+						empty = str[j + 1];
+					if (strcmp(str[j].c_str(), "-newer") == 0)
+						newer = str[j + 1];
 				 }
 				if (str[1].find(":", 0) != string::npos)//若为全局路径
 					find_path = str[1];
 				else
+                  find_path = cwd + str[1];
+				  
 
-					find_path = cwd + str[1];
-				complex_find(find_path,name,size);
+
+               complex_find_depth(find_path,name,size,iname,maxdepth,mindepth,atime,amin, mtime,mmin,newer,empty);
 
 
 
@@ -284,9 +311,6 @@ int main()
 			{
 				cout << "The input is incorrect!   find   path   -option   [   -print ]   [ -exec   -ok   command ]   {} \ " << endl;
 			}
-			
-		
-
 	}
 		
 		cout << "$ " << cwd << ">";

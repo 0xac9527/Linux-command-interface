@@ -935,7 +935,6 @@ void short_find(string path, string option, string parameter)
 		
 	}
 
-
 	else if (strcmp(option.c_str(), "-amin") == 0)
 	{
 		long hFile = 0;
@@ -1554,17 +1553,22 @@ void  find_maxdepth(string path, string parameter){
 					cout << fileinfo.name << endl;
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN |
 						FOREGROUND_BLUE);
-					if (depth < atoi(parameter.c_str())+1)
-					{
+					/*if (depth < atoi(parameter.c_str())+1)
+					{*/
 						find_maxdepth(p.assign(path).append("\\").append("\\").append(fileinfo.name),parameter);
 						depth--;
-					}
+					/*}*/
 				}
 			}
 			else if (!(fileinfo.attrib & _A_HIDDEN)) {
-				if (depth > 1)
-					cout << right << setw(depth * 2) << "|";
-				cout << fileinfo.name << endl;
+				if (depth<atoi(parameter.c_str())+2)
+				{
+					if (depth > 1)
+					{
+						cout << right << setw(depth * 2) << "|";
+					}
+					cout << fileinfo.name << endl;
+				}
 			}
 
 		} while (_findnext(hFile, &fileinfo) == 0);  //寻找下一个，成功返回0，否则-1
@@ -1596,7 +1600,7 @@ void  find_mindepth(string path, string parameter)
 				}
 			}
 			else if (!(fileinfo.attrib & _A_HIDDEN)) {
-				if (depth > atoi(parameter.c_str()))
+				if (depth > atoi(parameter.c_str()))/*********************************************************************/
 				{
 					if (depth > 1)
 					{
@@ -1628,6 +1632,8 @@ bool complex_find_name(struct _finddata_t file, string name)
 		return true;
 	else
 	{
+		name.erase(0, 3);
+		name.erase(name.end() - 1);
 		string temp;
 		temp.append(file.name);
 		int i;
@@ -1725,42 +1731,285 @@ bool complex_find_size(struct _finddata_t file, string size)
 		return false;
 	}
 }
+bool complex_find_empty(struct _finddata_t file, string empty)
+{
+	if (empty == "")
+		return true;
+	else
+	{
+		if (file.size == 0)
+			return true;
+	} 
+	 return false;
+	
+}
 
-void complex_find(string path, string name, string size)
+bool complex_find_iname(struct _finddata_t file, string iname)
+{
+	string temp = iname;
+	temp.erase(0, 3);
+	temp.erase(temp.end() - 1);
+	char* p = nullptr;
+	char* q = (char*)(temp.c_str());
+	p = strlwr(q);
+    temp = p;
+	if (complex_find_name(file, temp))
+		return true;
+	else
+		return false;
+	
+}
+bool complex_find_newer(struct _finddata_t file, string path, string newer)
+{
+	if (newer == "")
+		return true;
+	else
+	{
+		recursive_find_1(path, newer);
+
+		if (flag_num == 1)
+		{
+			if (file.time_write > cmp_time)
+				return true;
+		}
+		else
+		{
+			cout << "the input filename is not unique" << endl;
+			return false;
+		}
+
+	}
+}
+bool complex_find_maxdepth(string maxdepth)
+	{
+		if (maxdepth == "")
+			return true;
+		else
+		{
+			if (depth < atoi(maxdepth.c_str()) + 2)
+				return true;
+			else
+				return false;
+		}
+		
+	}
+bool complex_find_mindepth(string mindepth)
+{
+	if (mindepth == "")
+			return true;
+	else
+	{
+		if(depth > atoi(mindepth.c_str()))
+			return true;
+		else
+			return false;
+	}
+}
+bool complex_find_atime(struct _finddata_t file, string atime)
+{
+	if (atime == "")
+		return true;
+	else
+	{
+		time_t current_time;
+		string temp = atime;
+		current_time = time(0);
+		int delta_time = current_time - file.time_access;
+		char temp_char = temp.at(0);
+		if (temp_char == '-')
+		{
+			temp.erase(0, 1);
+
+			if (delta_time < 60 * 60 * 24 * atoi(temp.c_str()))
+			{
+				return true;
+			}
+
+		}
+		else if (temp_char == '+')
+		{
+			temp.erase(0, 1);
+
+			if (delta_time > 60 * 60 * 24 * atoi(temp.c_str()))
+			{
+				return true;
+			}
+
+		}
+		else
+		{
+			if (delta_time == 60 * 60 * 24 * atoi(temp.c_str()))
+				return true;
+		}
+	}
+	      return false;
+
+}
+bool complex_find_mtime(struct _finddata_t file, string mtime)
+{
+	if (mtime == "")
+		return true;
+	else
+	{
+		time_t current_time;
+		string temp = mtime;
+		current_time = time(0);
+		int delta_time = current_time - file.time_write;
+		char temp_char = temp.at(0);
+		if (temp_char == '-')
+		{
+			temp.erase(0, 1);
+
+			if (delta_time < 60 * 60 * 24 * atoi(temp.c_str()))
+			{
+				return true;
+			}
+
+		}
+		else if (temp_char == '+')
+		{
+			temp.erase(0, 1);
+
+			if (delta_time > 60 * 60 * 24 * atoi(temp.c_str()))
+			{
+				return true;
+			}
+
+		}
+		else
+		{
+			if (delta_time == 60 * 60 * 24 * atoi(temp.c_str()))
+				return true;
+		}
+	}
+	return false;
+}
+bool complex_find_amin(struct _finddata_t file, string amin)
+{
+	if (amin == "")
+		return true;
+	else
+	{
+		time_t current_time;
+		string temp = amin;
+		current_time = time(0);
+		int delta_time = current_time - file.time_access;
+		char temp_char = temp.at(0);
+		if (temp_char == '-')
+		{
+			temp.erase(0, 1);
+
+			if (delta_time < 60 * atoi(temp.c_str()))
+			{
+				return true;
+			}
+
+		}
+		else if (temp_char == '+')
+		{
+			temp.erase(0, 1);
+
+			if (delta_time > 60 * atoi(temp.c_str()))
+			{
+				return true;
+			}
+
+		}
+		else
+		{
+			if (delta_time == 60 *atoi(temp.c_str()))
+				return true;
+		}
+	}
+	return false;
+
+}
+
+bool complex_find_mmin(struct _finddata_t file, string mmin)
+{
+	if (mmin == "")
+		return true;
+	else
+	{
+		time_t current_time;
+		string temp = mmin;
+		current_time = time(0);
+		int delta_time = current_time - file.time_write;
+		char temp_char = temp.at(0);
+		if (temp_char == '-')
+		{
+			temp.erase(0, 1);
+
+			if (delta_time < 60 * atoi(temp.c_str()))
+			{
+				return true;
+			}
+
+		}
+		else if (temp_char == '+')
+		{
+			temp.erase(0, 1);
+
+			if (delta_time > 60 * atoi(temp.c_str()))
+			{
+				return true;
+			}
+
+		}
+		else
+		{
+			if (delta_time == 60 * atoi(temp.c_str()))
+				return true;
+		}
+	}
+	return false;
+
+}
+
+void complex_find(string path, string name, string size, string iname, string maxdepth, string mindepth, string atime, string amin,string mtime, string mmin, string newer, string empty)
 {
 	long hFile = 0;
 	struct _finddata_t fileinfo;  //很少用的文件信息读取结构
 	string p;
 	if ((hFile = _findfirst(p.assign(path).append("\\").append("*").c_str(), &fileinfo)) != -1)
 	{
-		num++;
+		depth++;
 		do {
 			if ((fileinfo.attrib & _A_SUBDIR) && !(fileinfo.attrib &_A_HIDDEN)) {  //比较文件类型是否是文件夹
 				if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0) {
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_GREEN |
 						FOREGROUND_BLUE);
-					if (num > 0)
-						cout << right << setw(num * 2) << "|";
+					if (depth>1)
+						cout << right << setw(depth * 2) << "|";
 					cout << fileinfo.name << endl;
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN |
 						FOREGROUND_BLUE);
-					complex_find(p.assign(path).append("\\").append("\\").append(fileinfo.name), name,size);
-					num--;
+					complex_find(p.assign(path).append("\\").append("\\").append(fileinfo.name), name,size,iname,maxdepth,mindepth,atime,amin,mtime,mmin,newer,empty);
+					depth--;
+
 				}
 			}
 			else if (!(fileinfo.attrib & _A_HIDDEN)) {
 			     
-				if(complex_find_size(fileinfo,size)&&complex_find_name(fileinfo,name))
+				if(complex_find_size(fileinfo,size)&&complex_find_name(fileinfo,name)&&complex_find_maxdepth(maxdepth)&&complex_find_mindepth(mindepth)&&complex_find_atime(fileinfo,atime)
+					&&complex_find_mtime(fileinfo,mtime) && complex_find_amin(fileinfo, amin) && complex_find_mmin(fileinfo, mmin))
 			
+
 				{
-					  if (num > 0)
-						cout << right << setw(num * 2) << "|";
+					  if (depth>1)
+						cout << right << setw(depth * 2) << "|";
 					  cout << fileinfo.name << endl;
 				}
 			}
 		} while (_findnext(hFile, &fileinfo) == 0);  //寻找下一个，成功返回0，否则-1
 		_findclose(hFile);
 	}
+
+}
+void complex_find_depth(string path, string name, string size, string iname, string maxdepth, string mindepth, string atime, string amin,string mtime, string mmin, string newer, string empty)
+{
+	depth = 0;
+	complex_find(path, name, size, iname, maxdepth, mindepth, atime, amin, mtime, mmin, newer, empty);
 
 }
 
